@@ -25,11 +25,7 @@ public class PlayerScript : MonoBehaviour, IDamagable
     private float lastComboTime;
 
     public GameObject attackHitboxPrefab;
-
-    private bool isReadyToCatch;
-    private bool isCatchingEnemy;
-    private GameObject catchedEnemy;
-    public string catchTag = "EnemyHitbox";
+    public CatchEnemyScript lastHeavyAttack;
 
     public float dashMultiplier = 2f;
     public float dashCooldown = 1f;
@@ -50,8 +46,6 @@ public class PlayerScript : MonoBehaviour, IDamagable
         lastComboTime = -100f;
         attackCount = 0;
         lastDashTime = -100f;
-
-        isReadyToCatch = false;
     }
 
     void Update()
@@ -99,7 +93,9 @@ public class PlayerScript : MonoBehaviour, IDamagable
         if (movementController.isGrounded)
         {
             // Landing
-            OnLanding();
+            lastHeavyAttack.OnLanding();
+            isInvicible = false;
+            isControllable = true;
         }
 
         if (!isControllable)
@@ -130,28 +126,8 @@ public class PlayerScript : MonoBehaviour, IDamagable
 
     }
 
-    private void OnLanding()
-    {
-        if (isCatchingEnemy)
-        {
-            IDamagable damagable = catchedEnemy.GetComponent<IDamagable>();
-            damagable.RecieveDamage(40, 1f, Vector2.zero, 3);
-            catchedEnemy = null;
-            isCatchingEnemy = false;
-        }
-        isInvicible = false;
-        isControllable = true;
-    }
-
     private void UpdateAttackState()
     {
-        //Last Heavy Attack
-        if (isCatchingEnemy)
-        {
-            Vector3 currentPosition = this.transform.position;
-            Vector3 direction = (isFacingRight ? 1 : -1) * Vector3.right;
-            catchedEnemy.transform.position = currentPosition + 0.2f * direction;
-        }
 
         if (!isControllable)
         {
@@ -271,7 +247,7 @@ public class PlayerScript : MonoBehaviour, IDamagable
                         {
                             Vector3 attackBoxPosition = currentPosition + 0.5f * direction;
                             int damage = 20;
-                            Vector2 horizontalKnockback = 10f * direction;
+                            Vector2 horizontalKnockback = 11f * direction;
                             Vector3 hitBoxSize = new Vector3(1, 1, 0.5f);
                             CreateAttackBox(attackBoxPosition, damage, 1f, horizontalKnockback, 0, hitBoxSize);
                         }
@@ -282,9 +258,7 @@ public class PlayerScript : MonoBehaviour, IDamagable
                             movementController.AddVerticalVelocity(6);
                             movementController.AddFloatingHorizontalVelocity(9 * direction);
                             movementController.isGrounded = false;
-                            isReadyToCatch = true;
-                            isCatchingEnemy = false;
-                            catchedEnemy = null;
+                            lastHeavyAttack.StartCatchEnemy(direction);
                             isControllable = false;
                         }
                         break;
@@ -331,19 +305,6 @@ public class PlayerScript : MonoBehaviour, IDamagable
         attackBox.horizontalKnockbackVelocity = horizontalKnockback;
         attackBox.verticalKnockbackVelocity = verticalKnockback;
         attackBox.boxCollider.size = hitBoxSize;
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (isReadyToCatch)
-        {
-            if (other.CompareTag(catchTag))
-            {
-                isCatchingEnemy = true;
-                catchedEnemy = other.gameObject;
-                isReadyToCatch = false;
-            }
-        }
     }
 
 }
