@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class HitboxTracker : MonoBehaviour
 {
-    public BoxCollider collider;
+    public BoxCollider m_collider;
 
     void Update()
     {
-        this.transform.position = collider.transform.position;
-        this.transform.localScale = collider.size;
+        this.transform.position = m_collider.transform.position;
+        this.transform.localScale = m_collider.size;
     }
 }

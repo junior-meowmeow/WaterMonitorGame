@@ -4,5 +4,5 @@ using UnityEngine;
 
 public interface IDamagable
 {
-    void RecieveDamage(int damage, float staggerDuration, Vector2 horizontalKnockbackVelocity, float verticalKnockbackVelocity);
+    void RecieveDamage(Vector3 attackerPosition,int damage, float staggerDuration, Vector2 horizontalKnockbackVelocity, float verticalKnockbackVelocity);
 }

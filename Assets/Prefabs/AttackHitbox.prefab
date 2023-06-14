@@ -49,6 +49,7 @@ MonoBehaviour:
   boxCollider: {fileID: 3130226925108581687}
   targetTag: EnemyHitbox
   decayTime: 0.3
+  attackerPosition: {x: 0, y: 0, z: 0}
   damage: 10
   staggerDuration: 0
   horizontalKnockbackVelocity: {x: 5, y: 0}
@@ -86,6 +87,10 @@ PrefabInstance:
       propertyPath: collider
       value: 
       objectReference: {fileID: 3130226925108581687}
+    - target: {fileID: 2486581229245203663, guid: 0c545c856c94953499359ea25e2bfe36, type: 3}
+      propertyPath: m_collider
+      value: 
+      objectReference: {fileID: 3130226925108581687}
     - target: {fileID: 3572497656403713418, guid: 0c545c856c94953499359ea25e2bfe36, type: 3}
       propertyPath: m_Name
       value: hitbox_tracker
@@ -96,11 +101,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4796518351156442495, guid: 0c545c856c94953499359ea25e2bfe36, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 8.79
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4796518351156442495, guid: 0c545c856c94953499359ea25e2bfe36, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 3.11
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4796518351156442495, guid: 0c545c856c94953499359ea25e2bfe36, type: 3}
       propertyPath: m_LocalPosition.z

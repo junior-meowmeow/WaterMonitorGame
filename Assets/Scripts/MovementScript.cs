@@ -19,14 +19,19 @@ public class MovementScript : MonoBehaviour
     private Vector2 decayableHorizontalVelocity;
     private Vector2 floatingHorizontalVelocity;
 
+    public bool isHittingGround = false;
+    private float lastGroundedTime;
+    public static float cancelFloatingDuration = 0.01f;
+
     public int bounceTimes;
     public static float decayRate = 2f;
     public static float minimumVelocity = 0.5f;
+    public bool hasDecayableVelocity = false;
 
     public static float depthScale = 0.75f;
 
-    public static float upperBorder = 1f;
-    public static float lowerBorder = -4.5f;
+    public static float upperBorder = 0.5f;
+    public static float lowerBorder = -5.0f;
     public static float horizontalBorder = 8.5f;
     public static bool leftSideLocked;
     public static bool rightSideLocked;
@@ -104,6 +109,10 @@ public class MovementScript : MonoBehaviour
 
     private void UpdateHorizontalMovement()
     {
+        if(decayableHorizontalVelocity != Vector2.zero)
+        {
+            hasDecayableVelocity = true;
+        }
         Vector2 totalHorizontalVelocity = horizontalVelocity + decayableHorizontalVelocity + floatingHorizontalVelocity;
         Vector2 scaledHorizontalVelocity = new Vector2(totalHorizontalVelocity.x, totalHorizontalVelocity.y * depthScale);
         horizontalPosition += scaledHorizontalVelocity * Time.deltaTime;
@@ -117,7 +126,7 @@ public class MovementScript : MonoBehaviour
 
         if (isGrounded && verticalVelocity < 0)
         {
-            if(this.bounceTimes > 0)
+            if(bounceTimes > 0)
             {
                 verticalVelocity = -verticalVelocity;
             }
@@ -133,7 +142,25 @@ public class MovementScript : MonoBehaviour
         if (verticalPosition <= 0)
         {
             verticalPosition = 0;
-            isGrounded = true;
+            if (isHittingGround)
+            {
+                if (Time.timeSinceLevelLoad - lastGroundedTime > cancelFloatingDuration)
+                {
+                    print("hit complete");
+                    isGrounded = true;
+                    isHittingGround = false;
+                }
+            }
+            else if(!isGrounded)
+            {
+                lastGroundedTime = Time.timeSinceLevelLoad;
+                isHittingGround = true;
+            }
+        }
+        else
+        {
+            //isGrounded = false;
+            isHittingGround = false;
         }
     }
 
@@ -178,6 +205,7 @@ public class MovementScript : MonoBehaviour
         if(decayableHorizontalVelocity.magnitude < minimumVelocity)
         {
             decayableHorizontalVelocity = Vector2.zero;
+            hasDecayableVelocity = false;
         }
     }
 }

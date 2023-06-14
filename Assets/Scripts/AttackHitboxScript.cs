@@ -10,6 +10,7 @@ public class AttackHitboxScript : MonoBehaviour
     private float createdTime;
     public float decayTime = 1f;
 
+    public Vector3 attackerPosition;
     public int damage = 10;
     public float staggerDuration = 0;
     public Vector2 horizontalKnockbackVelocity = Vector2.zero;
@@ -38,7 +39,7 @@ public class AttackHitboxScript : MonoBehaviour
             IDamagable damagable = other.GetComponent<IDamagable>();
             if (damagable != null)
             {
-                damagable.RecieveDamage(damage, staggerDuration,horizontalKnockbackVelocity,verticalKnockbackVelocity);
+                damagable.RecieveDamage(attackerPosition,damage, staggerDuration,horizontalKnockbackVelocity,verticalKnockbackVelocity);
                 isCollideTarget = true;
             }
         }

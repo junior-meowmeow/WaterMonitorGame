@@ -21,6 +21,11 @@ public class CatchEnemyScript : MonoBehaviour
 
     void Update()
     {
+        if(catchedEnemy == null)
+        {
+            isCatchingEnemy = false;
+        }
+
         if (isCatchingEnemy)
         {
             Vector3 currentPosition = this.transform.position;
@@ -41,7 +46,7 @@ public class CatchEnemyScript : MonoBehaviour
         if (isCatchingEnemy)
         {
             IDamagable damagable = catchedEnemy.GetComponent<IDamagable>();
-            damagable.RecieveDamage(40, 1f, Vector2.zero, 3);
+            damagable.RecieveDamage(this.transform.position,40, 1f, Vector2.zero, 3);
             catchedEnemy = null;
             isCatchingEnemy = false;
         }

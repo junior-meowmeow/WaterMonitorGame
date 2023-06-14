@@ -8,6 +8,10 @@ public class PlayerScript : MonoBehaviour, IDamagable
 
     public MovementScript movementController;
 
+    public SpriteRenderer spriteRenderer;
+    public Animator animator;
+
+    public int startingHealth = 100;
     public int health;
     public bool isInvicible;
     public bool isControllable;
@@ -15,6 +19,8 @@ public class PlayerScript : MonoBehaviour, IDamagable
     public float moveSpeed = 6f;
     public float dashSpeed = 8f;
     public bool isFacingRight = true;
+
+    private bool isWalking;
 
     public float attackCooldown = 0.3f;
     public float comboCooldown = 1f;
@@ -38,9 +44,11 @@ public class PlayerScript : MonoBehaviour, IDamagable
 
         movementController = this.GetComponent<MovementScript>();
 
-        health = 100;
+        health = startingHealth;
         isInvicible = false;
         isControllable = true;
+
+        isWalking = false;
 
         lastAttackTime = -100f;
         lastComboTime = -100f;
@@ -53,9 +61,10 @@ public class PlayerScript : MonoBehaviour, IDamagable
         UpdateMovement();
         UpdateDashState();
         UpdateAttackState();
+        UpdateSprite();
     }
 
-    public void RecieveDamage(int damage, float staggerDuration, Vector2 horizontalKnockbackVelocity, float verticalKnockbackVelocity)
+    public void RecieveDamage(Vector3 attackerPosition, int damage, float staggerDuration, Vector2 horizontalKnockbackVelocity, float verticalKnockbackVelocity)
     {
 
     }
@@ -73,10 +82,16 @@ public class PlayerScript : MonoBehaviour, IDamagable
         if (moveHorizontal > 0)
         {
             isFacingRight = true;
+            isWalking = true;
         }
         else if (moveHorizontal < 0)
         {
             isFacingRight = false;
+            isWalking = true;
+        }
+        else
+        {
+            isWalking = false;
         }
 
         Vector2 movement = new Vector2(moveHorizontal, moveVertical);
@@ -89,6 +104,11 @@ public class PlayerScript : MonoBehaviour, IDamagable
 
     private void UpdateDashState()
     {
+
+        if (movementController.isHittingGround)
+        {
+            lastHeavyAttack.OnLanding();
+        }
 
         if (movementController.isGrounded)
         {
@@ -295,11 +315,19 @@ public class PlayerScript : MonoBehaviour, IDamagable
 
     }
 
+    private void UpdateSprite()
+    {
+        spriteRenderer.flipX = isFacingRight;
+        animator.SetBool("isWalking", isWalking);
+    }
+
     private void CreateAttackBox(Vector3 position, int damage, float staggerDuration, Vector2 horizontalKnockback, float verticalKnockback, Vector3 hitBoxSize)
     {
         GameObject attackBoxObject = Instantiate(attackHitboxPrefab, position, Quaternion.identity);
         attackBoxObject.transform.SetParent(stage.transform, true);
         AttackHitboxScript attackBox = attackBoxObject.GetComponent<AttackHitboxScript>();
+        attackBox.targetTag = "EnemyHitbox";
+        attackBox.attackerPosition = this.transform.position;
         attackBox.damage = damage;
         attackBox.staggerDuration = staggerDuration;
         attackBox.horizontalKnockbackVelocity = horizontalKnockback;
