@@ -11,7 +11,7 @@ public class PlayerScript : MonoBehaviour, IDamagable
     public SpriteRenderer spriteRenderer;
     public Animator animator;
 
-    public int startingHealth = 100;
+    public int maxHealth = 100;
     public int health;
     public bool isInvicible;
     public bool isControllable;
@@ -20,11 +20,15 @@ public class PlayerScript : MonoBehaviour, IDamagable
     public float dashSpeed = 8f;
     public bool isFacingRight = true;
 
+    private bool isStagger;
+    private float lastStaggerTime;
+    private float currentStaggerDuration;
+
     private bool isWalking;
 
     private bool isFloating;
     private bool isKnockedBack;
-    private bool isDead;
+    [SerializeField] private bool isDead;
     private bool isDashing;
     private bool isAttacking;
     private bool isHeavyAttack;
@@ -49,11 +53,13 @@ public class PlayerScript : MonoBehaviour, IDamagable
 
     void Start()
     {
+        GameManagerScript.instance.player = this.transform;
+
         stage = this.transform.parent;
 
         movementController = this.GetComponent<MovementScript>();
 
-        health = startingHealth;
+        health = maxHealth;
         isInvicible = false;
         isControllable = true;
 
@@ -69,7 +75,7 @@ public class PlayerScript : MonoBehaviour, IDamagable
 
     void Update()
     {
-        UpdateControllableState();
+        UpdateInterruptedState();
         UpdateMovement();
         UpdateDashState();
         UpdateAttackState();
@@ -78,21 +84,91 @@ public class PlayerScript : MonoBehaviour, IDamagable
 
     public void RecieveDamage(Vector3 attackerPosition, int damage, float staggerDuration, Vector2 horizontalKnockbackVelocity, float verticalKnockbackVelocity)
     {
+        movementController.SetHorizontalVelocity(Vector2.zero);
+        isWalking = false;
 
-    }
-
-    private void UpdateControllableState()
-    {
-        if (isAttacking)
+        if (damage > 0)
         {
-            isControllable = false;
-            if (Time.timeSinceLevelLoad - lastAttackTime > attackCooldown)
+            health -= damage;
+            if (health <= 0)
             {
-                isAttacking = false;
+                OnDead();
             }
         }
 
-        bool isInterrupted = false;
+        if (staggerDuration > 0)
+        {
+            // play stagger animation
+            isStagger = true;
+            if (lastStaggerTime + currentStaggerDuration < Time.timeSinceLevelLoad + staggerDuration)
+            {
+                lastStaggerTime = Time.timeSinceLevelLoad;
+                currentStaggerDuration = staggerDuration;
+            }
+        }
+
+        if (verticalKnockbackVelocity > 0)
+        {
+            //knock up type
+            movementController.SetVerticalVelocity(verticalKnockbackVelocity);
+            movementController.AddFloatingHorizontalVelocity(horizontalKnockbackVelocity);
+            movementController.isGrounded = false;
+            isFloating = true;
+            isKnockedBack = true;
+        }
+        else if (horizontalKnockbackVelocity != Vector2.zero)
+        {
+            //knock back type
+            movementController.AddDecayableHorizontalVelocity(horizontalKnockbackVelocity);
+            isKnockedBack = true;
+        }
+
+        if (attackerPosition.x > this.transform.position.x)
+        {
+            isFacingRight = true;
+        }
+        else
+        {
+            isFacingRight = false;
+        }
+    }
+    public void OnDead()
+    {
+        isDead = true;
+        animator.SetTrigger("Dead");
+        //Invoke(nameof(DestroySelf), 2.0f);
+    }
+
+    private void DestroySelf()
+    {
+        Destroy(this.gameObject);
+    }
+
+    private void UpdateInterruptedState()
+    {
+        // Interrupted State
+        if (isKnockedBack && !movementController.hasDecayableVelocity)
+        {
+            isKnockedBack = false;
+        }
+
+        if (Time.timeSinceLevelLoad > lastStaggerTime + currentStaggerDuration)
+        {
+            isStagger = false;
+        }
+
+        // ControllableState
+        if (isAttacking && Time.timeSinceLevelLoad - lastAttackTime > attackCooldown)
+        {
+            isAttacking = false;
+        }
+
+        if (isAttacking && Time.timeSinceLevelLoad - lastAttackTime > attackCooldown)
+        {
+            isAttacking = false;
+        }
+
+        bool isInterrupted = isStagger || isFloating || isKnockedBack || isDead;
 
         if (isInterrupted || isAttacking || isDashing)
         {
@@ -152,6 +228,7 @@ public class PlayerScript : MonoBehaviour, IDamagable
         {
             // Landing
             isInvicible = false;
+            isFloating = false;
             isDashing = false;
         }
 
@@ -343,6 +420,7 @@ public class PlayerScript : MonoBehaviour, IDamagable
     {
         print(attackCount);
         movementController.SetHorizontalVelocity(Vector2.zero);
+        isWalking = false;
         isAttacking = true;
         lastAttackTime = Time.timeSinceLevelLoad;
 
@@ -369,7 +447,12 @@ public class PlayerScript : MonoBehaviour, IDamagable
     private void UpdateSprite()
     {
         spriteRenderer.flipX = isFacingRight;
+
+        bool isAttacked = isStagger || isKnockedBack;
+
         animator.SetBool("isWalking", isWalking);
+        animator.SetBool("isAttacked", isAttacked);
+        animator.SetBool("isFalling", isFloating);
         animator.SetBool("isDead", isDead);
         animator.SetBool("isAttacking", isAttacking);
         animator.SetBool("isHeavyAttack", isHeavyAttack);

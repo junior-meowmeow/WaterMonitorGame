@@ -8,12 +8,15 @@ public class EnemyScript : MonoBehaviour, IDamagable
 {
     public Transform stage;
 
+    public Transform player;
+
     public MovementScript movementController;
+    public AttackRangeScript attackRange;
 
     public SpriteRenderer spriteRenderer;
     public Animator animator;
 
-    public int startingHealth = 100;
+    public int maxHealth = 100;
     public int health;
     public bool isInvicible;
     public bool isControllable;
@@ -22,9 +25,9 @@ public class EnemyScript : MonoBehaviour, IDamagable
     private float lastStaggerTime;
     private float currentStaggerDuration;
 
-    private bool isFloating;
-    private bool isKnockedBack;
-    private bool isDead;
+    [SerializeField] private bool isFloating;
+    [SerializeField] private bool isKnockedBack;
+    [SerializeField] private bool isDead;
 
     private float lastActionTime;
     public float actionCooldown = 0.5f;
@@ -32,12 +35,13 @@ public class EnemyScript : MonoBehaviour, IDamagable
     public float moveSpeed = 6f;
     public bool isFacingRight = true;
 
-    private bool isPlayerInAttackRange = false;
+    private Vector2 velocity;
+    private float walkingDuration;
 
-    [SerializeField]private bool isWalking = false;
-    private bool isAttacking = false;
+    [SerializeField] private bool isWalking = false;
+    [SerializeField] private bool isAttacking = false;
 
-    public float attackCooldown = 2f;
+    public float attackCooldown = 5f;
     public float comboCooldown = 1f;
     public float attackSpeed = 1f;
     public float resetDuration = 4f;
@@ -53,9 +57,12 @@ public class EnemyScript : MonoBehaviour, IDamagable
 
         movementController = this.GetComponent<MovementScript>();
 
-        health = startingHealth;
+        health = maxHealth;
         isInvicible = false;
         isControllable = true;
+
+        velocity = Vector2.zero;
+        walkingDuration = 0f;
 
         lastActionTime = -100f;
         lastAttackTime = -100f;
@@ -64,6 +71,8 @@ public class EnemyScript : MonoBehaviour, IDamagable
         isFloating = false;
         isKnockedBack = false;
         isDead = false;
+
+        player = GameManagerScript.instance.player;
     }
 
     void Update()
@@ -112,7 +121,7 @@ public class EnemyScript : MonoBehaviour, IDamagable
             isKnockedBack = true;
         }
 
-        if(attackerPosition.x > this.transform.position.x)
+        if (attackerPosition.x > this.transform.position.x)
         {
             isFacingRight = true;
         }
@@ -126,6 +135,7 @@ public class EnemyScript : MonoBehaviour, IDamagable
     public void OnDead()
     {
         isDead = true;
+        isControllable = false;
         Invoke(nameof(DestroySelf), 2.0f);
     }
 
@@ -152,6 +162,23 @@ public class EnemyScript : MonoBehaviour, IDamagable
             isStagger = false;
         }
 
+        // ControllableState
+        if (isAttacking && Time.timeSinceLevelLoad - lastAttackTime > attackCooldown)
+        {
+            isAttacking = false;
+        }
+
+        bool isInterrupted = isStagger || isFloating || isKnockedBack || isDead;
+
+        if (isInterrupted || isAttacking)
+        {
+            isControllable = false;
+        }
+        else
+        {
+            isControllable = true;
+        }
+
     }
 
     private void UpdateCooldown()
@@ -167,14 +194,42 @@ public class EnemyScript : MonoBehaviour, IDamagable
     private void UpdateAction()
     {
 
+        if (!isControllable)
+        {
+            return;
+        }
+
+        bool isActionCooldownReady = (Time.timeSinceLevelLoad - lastActionTime) > actionCooldown;
+
         bool isAttackCooldownReady = (Time.timeSinceLevelLoad - lastAttackTime) * attackSpeed > attackCooldown;
 
         //print(isAttackCooldownReady + " " + isComboCooldownReady);
 
-        if (isPlayerInAttackRange && isAttackCooldownReady)
+        if (isActionCooldownReady)
         {
-            PerformAttack();
+            if (attackRange.isPlayerInAttackRange && isAttackCooldownReady)
+            {
+                PerformAttack();
+            }
+            else
+            {
+                CalculateMovement();
+            }
         }
+
+        PerformMovement();
+    }
+
+    private void CalculateMovement()
+    {
+        Vector2 currentPosition2D = this.transform.position;
+        Vector2 targetPosition2D = player.position;
+    }
+
+    private void PerformMovement()
+    {
+
+
 
     }
 
@@ -189,8 +244,8 @@ public class EnemyScript : MonoBehaviour, IDamagable
             case 0:
                 {
                     Vector3 attackBoxPosition = currentPosition + 0.5f * direction;
-                    int damage = 15;
-                    Vector2 horizontalKnockback = 1f * direction;
+                    int damage = 5;
+                    Vector2 horizontalKnockback = 0.75f * direction;
                     Vector3 hitBoxSize = new Vector3(1, 1, 0.5f);
                     CreateAttackBox(attackBoxPosition, damage, 0.3f, horizontalKnockback, 0, hitBoxSize);
                 }
@@ -198,8 +253,8 @@ public class EnemyScript : MonoBehaviour, IDamagable
             case 1:
                 {
                     Vector3 attackBoxPosition = currentPosition + 0.5f * direction;
-                    int damage = 15;
-                    Vector2 horizontalKnockback = 1f * direction;
+                    int damage = 5;
+                    Vector2 horizontalKnockback = 0.75f * direction;
                     Vector3 hitBoxSize = new Vector3(1, 1, 0.5f);
                     CreateAttackBox(attackBoxPosition, damage, 0.3f, horizontalKnockback, 0, hitBoxSize);
                 }
@@ -209,8 +264,9 @@ public class EnemyScript : MonoBehaviour, IDamagable
                     Vector3 attackBoxPosition = currentPosition + 0.5f * direction;
                     int damage = 15;
                     Vector2 horizontalKnockback = 1f * direction;
-                    Vector3 hitBoxSize = new Vector3(1, 1, 0.5f);
-                    CreateAttackBox(attackBoxPosition, damage, 0.3f, horizontalKnockback, 0, hitBoxSize);
+                    float verticalKnockback = 5f;
+                    Vector3 hitBoxSize = new Vector3(1.25f, 1f, 1f);
+                    CreateAttackBox(attackBoxPosition, damage, 0.75f, horizontalKnockback, verticalKnockback, hitBoxSize);
                 }
                 break;
             default:
@@ -219,6 +275,7 @@ public class EnemyScript : MonoBehaviour, IDamagable
         }
 
         lastAttackTime = Time.timeSinceLevelLoad;
+        isAttacking = true;
         attackCount++;
 
         if (attackCount > 2)
@@ -232,7 +289,10 @@ public class EnemyScript : MonoBehaviour, IDamagable
     {
         spriteRenderer.flipX = isFacingRight;
 
+        bool isAttacked = isStagger || isKnockedBack;
+
         animator.SetBool("isWalking", isWalking);
+        animator.SetBool("isAttacked", isAttacked);
         animator.SetBool("isFalling", isFloating);
         animator.SetBool("isDead", isDead);
     }
@@ -242,7 +302,7 @@ public class EnemyScript : MonoBehaviour, IDamagable
         GameObject attackBoxObject = Instantiate(attackHitboxPrefab, position, Quaternion.identity);
         attackBoxObject.transform.SetParent(stage.transform, true);
         AttackHitboxScript attackBox = attackBoxObject.GetComponent<AttackHitboxScript>();
-        attackBox.targetTag = "EnemyHitbox";
+        attackBox.targetTag = "PlayerHitbox";
         attackBox.attackerPosition = this.transform.position;
         attackBox.damage = damage;
         attackBox.staggerDuration = staggerDuration;

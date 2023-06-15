@@ -133,7 +133,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4432174921253907424}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 6.24, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -157,22 +157,28 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stage: {fileID: 0}
+  player: {fileID: 0}
   movementController: {fileID: 2103243245864879451}
+  attackRange: {fileID: 3633831425404031120}
   spriteRenderer: {fileID: 1495635414006755176}
   animator: {fileID: 4274639529561156}
-  startingHealth: 100
+  maxHealth: 100
   health: 0
   isInvicible: 0
   isControllable: 0
-  actionCooldown: 0.5
+  isFloating: 1
+  isKnockedBack: 0
+  isDead: 0
+  actionCooldown: 1
   moveSpeed: 6
   isFacingRight: 1
   isWalking: 0
-  attackCooldown: 0.3
-  comboCooldown: 1
+  isAttacking: 0
+  attackCooldown: 5
+  comboCooldown: 5
   attackSpeed: 1
   resetDuration: 4
-  attackHitboxPrefab: {fileID: 0}
+  attackHitboxPrefab: {fileID: 8253855612481442477, guid: 532e2a2c8c63fb94eb450be15c147543, type: 3}
 --- !u!114 &2103243245864879451
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -249,6 +255,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8053307175805659204}
   - component: {fileID: 8975045066638967326}
+  - component: {fileID: 3633831425404031120}
   m_Layer: 0
   m_Name: AttackRangeHitbox
   m_TagString: PlayerInteraction
@@ -292,6 +299,20 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 2.25, y: 1.5, z: 0.5}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &3633831425404031120
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4732948005611227960}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3db86b99d213cf74ca3dddb837429667, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isPlayerInAttackRange: 0
+  targetTag: PlayerHitbox
 --- !u!1 &6434087661658732841
 GameObject:
   m_ObjectHideFlags: 0
