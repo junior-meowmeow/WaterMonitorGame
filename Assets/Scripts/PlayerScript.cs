@@ -22,7 +22,16 @@ public class PlayerScript : MonoBehaviour, IDamagable
 
     private bool isWalking;
 
-    public float attackCooldown = 0.3f;
+    private bool isFloating;
+    private bool isKnockedBack;
+    private bool isDead;
+    private bool isDashing;
+    private bool isAttacking;
+    private bool isHeavyAttack;
+
+    private float attackCooldown = 0.15f;
+    public float lightAttackCooldown = 0.15f;
+    public float heavyAttackCooldown = 0.30f;
     public float comboCooldown = 1f;
     public float attackSpeed = 1f;
     public float attackResetDuration = 1f;
@@ -49,6 +58,8 @@ public class PlayerScript : MonoBehaviour, IDamagable
         isControllable = true;
 
         isWalking = false;
+        isDead = false;
+        isAttacking = false;
 
         lastAttackTime = -100f;
         lastComboTime = -100f;
@@ -58,6 +69,7 @@ public class PlayerScript : MonoBehaviour, IDamagable
 
     void Update()
     {
+        UpdateControllableState();
         UpdateMovement();
         UpdateDashState();
         UpdateAttackState();
@@ -67,6 +79,29 @@ public class PlayerScript : MonoBehaviour, IDamagable
     public void RecieveDamage(Vector3 attackerPosition, int damage, float staggerDuration, Vector2 horizontalKnockbackVelocity, float verticalKnockbackVelocity)
     {
 
+    }
+
+    private void UpdateControllableState()
+    {
+        if (isAttacking)
+        {
+            isControllable = false;
+            if (Time.timeSinceLevelLoad - lastAttackTime > attackCooldown)
+            {
+                isAttacking = false;
+            }
+        }
+
+        bool isInterrupted = false;
+
+        if (isInterrupted || isAttacking || isDashing)
+        {
+            isControllable = false;
+        }
+        else
+        {
+            isControllable = true;
+        }
     }
 
     private void UpdateMovement()
@@ -82,19 +117,22 @@ public class PlayerScript : MonoBehaviour, IDamagable
         if (moveHorizontal > 0)
         {
             isFacingRight = true;
-            isWalking = true;
         }
         else if (moveHorizontal < 0)
         {
             isFacingRight = false;
+        }
+
+        Vector2 movement = new Vector2(moveHorizontal, moveVertical);
+
+        if (movement != Vector2.zero)
+        {
             isWalking = true;
         }
         else
         {
             isWalking = false;
         }
-
-        Vector2 movement = new Vector2(moveHorizontal, moveVertical);
 
         //print(movement);
 
@@ -113,9 +151,8 @@ public class PlayerScript : MonoBehaviour, IDamagable
         if (movementController.isGrounded)
         {
             // Landing
-            lastHeavyAttack.OnLanding();
             isInvicible = false;
-            isControllable = true;
+            isDashing = false;
         }
 
         if (!isControllable)
@@ -134,7 +171,7 @@ public class PlayerScript : MonoBehaviour, IDamagable
                 movementController.AddVerticalVelocity(dashSpeed);
                 movementController.AddFloatingHorizontalVelocity(dashMultiplier * dashSpeed * (isFacingRight ? 1 : -1) * Vector2.right);
                 movementController.isGrounded = false;
-                isControllable = false;
+                isDashing = true;
                 isInvicible = true;
                 lastDashTime = Time.timeSinceLevelLoad;
             }
@@ -175,25 +212,25 @@ public class PlayerScript : MonoBehaviour, IDamagable
                 {
                     case 0:
                         {
-                            Vector3 attackBoxPosition = currentPosition + 0.5f * direction;
-                            int damage = 15;
-                            Vector2 horizontalKnockback = 1f * direction;
-                            Vector3 hitBoxSize = new Vector3(1, 1, 0.5f);
+                            Vector3 attackBoxPosition = currentPosition + 0.75f * direction;
+                            int damage = 10;
+                            Vector2 horizontalKnockback = 0.75f * direction;
+                            Vector3 hitBoxSize = new Vector3(1.5f, 1, 0.5f);
                             CreateAttackBox(attackBoxPosition, damage, 0.3f, horizontalKnockback, 0, hitBoxSize);
                         }
                         break;
                     case 1:
                         {
-                            Vector3 attackBoxPosition = currentPosition + 0.5f * direction;
-                            int damage = 15;
-                            Vector2 horizontalKnockback = 1f * direction;
-                            Vector3 hitBoxSize = new Vector3(1, 1, 0.5f);
+                            Vector3 attackBoxPosition = currentPosition + 0.75f * direction;
+                            int damage = 10;
+                            Vector2 horizontalKnockback = 0.75f * direction;
+                            Vector3 hitBoxSize = new Vector3(1.5f, 1, 0.5f);
                             CreateAttackBox(attackBoxPosition, damage, 0.3f, horizontalKnockback, 0, hitBoxSize);
                         }
                         break;
                     case 2:
                         {
-                            Vector3 attackBoxPosition = currentPosition + 2.5f * direction;
+                            Vector3 attackBoxPosition = currentPosition + 2.0f * direction;
                             int damage = 10;
                             float staggerDuration = 0.6f;
                             Vector3 hitBoxSize = new Vector3(4f, 0.5f, 0.5f);
@@ -202,20 +239,20 @@ public class PlayerScript : MonoBehaviour, IDamagable
                         break;
                     case 3:
                         {
-                            Vector3 attackBoxPosition = currentPosition + 0.8f * direction;
+                            Vector3 attackBoxPosition = currentPosition + 1.2f * direction;
                             int damage = 10;
                             float verticalKnockback = 6.5f;
-                            Vector3 hitBoxSize = new Vector3(1f, 1f, 1f);
+                            Vector3 hitBoxSize = new Vector3(1.25f, 1.2f, 1f);
                             CreateAttackBox(attackBoxPosition, damage, 0, Vector2.zero, verticalKnockback, hitBoxSize);
                         }
                         break;
                     case 4:
                         {
-                            Vector3 attackBoxPosition = currentPosition + 0.8f * direction;
+                            Vector3 attackBoxPosition = currentPosition + 1.2f * direction;
                             int damage = 10;
                             Vector2 horizontalKnockback = 5 * direction;
                             float verticalKnockback = 5;
-                            Vector3 hitBoxSize = new Vector3(1f, 1f, 1f);
+                            Vector3 hitBoxSize = new Vector3(1.25f, 1.5f, 1f);
                             CreateAttackBox(attackBoxPosition, damage, 0, horizontalKnockback, verticalKnockback, hitBoxSize);
                         }
                         break;
@@ -223,9 +260,7 @@ public class PlayerScript : MonoBehaviour, IDamagable
                         print("INVALID PLAYER ATTACK COUNT");
                         break;
                 }
-                print(attackCount);
-                lastAttackTime = Time.timeSinceLevelLoad;
-                attackCount++;
+                AfterAttack(false);
 
             }
             else if (heaveyAttackPressed)
@@ -235,68 +270,57 @@ public class PlayerScript : MonoBehaviour, IDamagable
                 {
                     case 0:
                         {
-                            Vector3 attackBoxPosition = currentPosition + 0.5f * direction;
+                            Vector3 attackBoxPosition = currentPosition + 0.75f * direction;
                             int damage = 20;
-                            Vector2 horizontalKnockback = 5f * direction;
-                            Vector3 hitBoxSize = new Vector3(1, 1, 0.5f);
+                            Vector2 horizontalKnockback = 7.5f * direction;
+                            Vector3 hitBoxSize = new Vector3(1.5f, 1, 0.5f);
                             CreateAttackBox(attackBoxPosition, damage, 0.3f, horizontalKnockback, 0, hitBoxSize);
                         }
                         break;
                     case 1:
                         {
-                            Vector3 attackBoxPosition = currentPosition + 0.8f * direction;
-                            int damage = 20;
+                            Vector3 attackBoxPosition = currentPosition + 1.0f * direction;
+                            int damage = 15;
                             float verticalKnockback = 5;
-                            Vector3 hitBoxSize = new Vector3(1f, 1f, 1f);
+                            Vector3 hitBoxSize = new Vector3(1.5f, 1f, 1f);
                             CreateAttackBox(attackBoxPosition, damage, 0, Vector2.zero, verticalKnockback, hitBoxSize);
                         }
                         break;
                     case 2:
                         {
-                            Vector3 attackBoxPosition = currentPosition + 0.8f * direction;
-                            Vector3 secondAttackBoxPosition = currentPosition - 0.8f * direction;
+                            Vector3 attackBoxPosition = currentPosition + 1.2f * direction;
+                            Vector3 secondAttackBoxPosition = currentPosition - 1.2f * direction;
                             int damage = 25;
                             Vector2 horizontalKnockback = 7.5f * direction;
                             float verticalKnockback = 5;
-                            Vector3 hitBoxSize = new Vector3(1f, 1f, 1f);
+                            Vector3 hitBoxSize = new Vector3(1.25f, 1f, 1f);
                             CreateAttackBox(attackBoxPosition, damage, 0, horizontalKnockback, verticalKnockback, hitBoxSize);
                             CreateAttackBox(secondAttackBoxPosition, damage, 0, horizontalKnockback, verticalKnockback, hitBoxSize);
                         }
                         break;
                     case 3:
                         {
-                            Vector3 attackBoxPosition = currentPosition + 0.5f * direction;
+                            Vector3 attackBoxPosition = currentPosition + 0.75f * direction;
                             int damage = 20;
                             Vector2 horizontalKnockback = 11f * direction;
-                            Vector3 hitBoxSize = new Vector3(1, 1, 0.5f);
+                            Vector3 hitBoxSize = new Vector3(1.5f, 1, 0.5f);
                             CreateAttackBox(attackBoxPosition, damage, 1f, horizontalKnockback, 0, hitBoxSize);
                         }
                         break;
                     case 4:
                         {
-                            movementController.SetHorizontalVelocity(Vector2.zero);
                             movementController.AddVerticalVelocity(6);
                             movementController.AddFloatingHorizontalVelocity(9 * direction);
                             movementController.isGrounded = false;
                             lastHeavyAttack.StartCatchEnemy(direction);
-                            isControllable = false;
+                            isDashing = true;
                         }
                         break;
                     default:
                         print("INVALID PLAYER ATTACK COUNT");
                         break;
                 }
-                print(attackCount);
-                lastAttackTime = Time.timeSinceLevelLoad;
-                attackCount++;
-            }
-
-            //print(attackCount);
-            // Combo End
-            if (attackCount > 4)
-            {
-                lastComboTime = Time.timeSinceLevelLoad;
-                attackCount = 0;
+                AfterAttack(true);
             }
 
         }
@@ -315,10 +339,41 @@ public class PlayerScript : MonoBehaviour, IDamagable
 
     }
 
+    private void AfterAttack(bool isHeavyAttack)
+    {
+        print(attackCount);
+        movementController.SetHorizontalVelocity(Vector2.zero);
+        isAttacking = true;
+        lastAttackTime = Time.timeSinceLevelLoad;
+
+        this.isHeavyAttack = isHeavyAttack;
+        if (isHeavyAttack)
+        {
+            attackCooldown = heavyAttackCooldown;
+        }
+        else
+        {
+            attackCooldown = lightAttackCooldown;
+        }
+
+        attackCount++;
+
+        // Check Combo End
+        if (attackCount > 4)
+        {
+            lastComboTime = Time.timeSinceLevelLoad;
+            attackCount = 0;
+        }
+    }
+
     private void UpdateSprite()
     {
         spriteRenderer.flipX = isFacingRight;
         animator.SetBool("isWalking", isWalking);
+        animator.SetBool("isDead", isDead);
+        animator.SetBool("isAttacking", isAttacking);
+        animator.SetBool("isHeavyAttack", isHeavyAttack);
+        animator.SetInteger("attackCount", attackCount);
     }
 
     private void CreateAttackBox(Vector3 position, int damage, float staggerDuration, Vector2 horizontalKnockback, float verticalKnockback, Vector3 hitBoxSize)

@@ -21,7 +21,7 @@ public class MovementScript : MonoBehaviour
 
     public bool isHittingGround = false;
     private float lastGroundedTime;
-    public static float cancelFloatingDuration = 0.01f;
+    public static float cancelFloatingDuration = 0.02f;
 
     public int bounceTimes;
     public static float decayRate = 2f;

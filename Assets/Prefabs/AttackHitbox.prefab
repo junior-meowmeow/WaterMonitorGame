@@ -48,7 +48,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   boxCollider: {fileID: 3130226925108581687}
   targetTag: EnemyHitbox
-  decayTime: 0.3
+  decayTime: 0.2
   attackerPosition: {x: 0, y: 0, z: 0}
   damage: 10
   staggerDuration: 0
