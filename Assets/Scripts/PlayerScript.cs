@@ -91,6 +91,11 @@ public class PlayerScript : MonoBehaviour, IDamagable
 
     public void RecieveDamage(Vector3 attackerPosition, int damage, float staggerDuration, Vector2 horizontalKnockbackVelocity, float verticalKnockbackVelocity)
     {
+        if(isInvicible)
+        {
+            return;
+        }
+
         movementController.SetHorizontalVelocity(Vector2.zero);
         isWalking = false;
 
@@ -403,6 +408,7 @@ public class PlayerScript : MonoBehaviour, IDamagable
                             movementController.AddFloatingHorizontalVelocity(9 * direction);
                             movementController.isGrounded = false;
                             lastHeavyAttack.StartCatchEnemy(direction);
+                            isInvicible = true;
                             isDashing = true;
                         }
                         break;

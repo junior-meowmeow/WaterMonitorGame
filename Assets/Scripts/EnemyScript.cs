@@ -97,6 +97,11 @@ public class EnemyScript : MonoBehaviour, IDamagable
 
     public void RecieveDamage(Vector3 attackerPosition, int damage, float staggerDuration, Vector2 horizontalKnockbackVelocity, float verticalKnockbackVelocity)
     {
+        if (isInvicible)
+        {
+            return;
+        }
+
         CancelMovement();
 
         if (damage > 0)

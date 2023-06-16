@@ -4,15 +4,24 @@ using UnityEngine;
 
 public class ScrollingScript : MonoBehaviour
 {
-    // Start is called before the first frame update
+    public Transform player;
+
+    public bool scrollable = true;
+    public float horizontalScrollThreshold = 6.5f;
+
     void Start()
     {
-        
+        player = GameManagerScript.instance.player;
     }
 
-    // Update is called once per frame
     void Update()
     {
-        
+        float playerX = player.position.x;
+
+        if (scrollable && Mathf.Abs(playerX) > horizontalScrollThreshold)
+        {
+            float deltaX = Mathf.Abs(playerX) - horizontalScrollThreshold;
+            this.transform.Translate(Vector3.left * Mathf.Sign(playerX) * deltaX);
+        }
     }
 }
