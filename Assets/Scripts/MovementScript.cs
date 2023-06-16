@@ -10,6 +10,7 @@ public class MovementScript : MonoBehaviour
     private readonly float gravityConstant = -9.81f;
     public float gravityScale = 2f;
     public bool isGrounded = false;
+    public bool isFalling = false;
 
     private float verticalPosition = 0;
     private Vector2 horizontalPosition;
@@ -47,6 +48,7 @@ public class MovementScript : MonoBehaviour
         bounceTimes = 0;
         leftSideLocked = false;
         rightSideLocked = false;
+        isFalling = false;
     }
 
     void Update()
@@ -120,7 +122,7 @@ public class MovementScript : MonoBehaviour
 
     private void UpdateVerticalMovement()
     {
-        verticalVelocity += gravityConstant * gravityScale * Time.deltaTime;
+        verticalVelocity += gravityConstant * gravityScale * Time.deltaTime * (isFalling ? 10 : 1);
 
         verticalPosition += verticalVelocity * Time.deltaTime;
 
@@ -139,7 +141,7 @@ public class MovementScript : MonoBehaviour
             }
         }
 
-        if (verticalPosition <= 0)
+        if (verticalPosition <= 0 && !isFalling)
         {
             verticalPosition = 0;
             if (isHittingGround)

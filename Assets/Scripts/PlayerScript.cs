@@ -40,7 +40,7 @@ public class PlayerScript : MonoBehaviour, IDamagable
     private bool isAttacking;
     private bool isHeavyAttack;
 
-    private float attackCooldown = 0.15f;
+    [SerializeField] private float attackCooldown = 0.15f;
     public float lightAttackCooldown = 0.15f;
     public float heavyAttackCooldown = 0.30f;
     public float comboCooldown = 1f;
@@ -91,7 +91,7 @@ public class PlayerScript : MonoBehaviour, IDamagable
 
     public void RecieveDamage(Vector3 attackerPosition, int damage, float staggerDuration, Vector2 horizontalKnockbackVelocity, float verticalKnockbackVelocity)
     {
-        if(isInvicible)
+        if (isInvicible)
         {
             return;
         }
@@ -162,6 +162,13 @@ public class PlayerScript : MonoBehaviour, IDamagable
         Destroy(this.gameObject);
     }
 
+    public void FallToDead()
+    {
+        movementController.isFalling = true;
+        spriteRenderer.sortingOrder = -1000;
+        Invoke(nameof(OnDead), 0.75f);
+    }
+
     private void UpdateInterruptedState()
     {
         // Interrupted State
@@ -176,11 +183,6 @@ public class PlayerScript : MonoBehaviour, IDamagable
         }
 
         // ControllableState
-        if (isAttacking && Time.timeSinceLevelLoad - lastAttackTime > attackCooldown)
-        {
-            isAttacking = false;
-        }
-
         if (isAttacking && Time.timeSinceLevelLoad - lastAttackTime > attackCooldown)
         {
             isAttacking = false;
@@ -453,7 +455,7 @@ public class PlayerScript : MonoBehaviour, IDamagable
             attackCooldown = lightAttackCooldown;
         }
 
-        audioSource.PlayOneShot(attackSounds[attackCount+(isHeavyAttack ? 5 : 0)]);
+        audioSource.PlayOneShot(attackSounds[attackCount + (isHeavyAttack ? 5 : 0)]);
 
         attackCount++;
 

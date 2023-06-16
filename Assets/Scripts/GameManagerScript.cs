@@ -10,13 +10,19 @@ public class GameManagerScript : MonoBehaviour
     public AudioSource audioSource;
     public AudioClip mapBGM;
 
-    public Transform player;
+    public ScrollingScript stage;
 
-    public GameObject[] enemyList;
+    public float leftBorder = 0f;
+    public float rightBorder = -133f;
+
+    public Transform player;
+    public MovementScript playerMovement;
+
+    public List<GameObject> enemyList = new List<GameObject>();
 
     void Awake()
     {
-        if (instance == null )
+        if (instance == null)
         {
             instance = this;
         }
@@ -26,13 +32,26 @@ public class GameManagerScript : MonoBehaviour
     {
         audioSource.clip = mapBGM;
         audioSource.Play();
+        stage.leftBorder = leftBorder;
+        stage.rightBorder = rightBorder;
     }
     void Update()
     {
-
+        playerMovement.leftSideLocked = stage.isLeftLocked;
+        playerMovement.rightSideLocked = stage.isRightLocked;
+        if (enemyList.Count > 0)
+        {
+            stage.scrollable = false;
+            playerMovement.leftSideLocked = true;
+            playerMovement.rightSideLocked = true;
+        }
+        else
+        {
+            stage.scrollable = true;
+        }
     }
 
-    public void changeBGM(AudioClip newBGM)
+    public void ChangeBGM(AudioClip newBGM)
     {
         audioSource.Stop();
         audioSource.clip = newBGM;

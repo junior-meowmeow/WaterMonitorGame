@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
-using UnityEditor.SceneManagement;
 using UnityEngine;
 
 public class EnemyScript : MonoBehaviour, IDamagable
@@ -85,6 +84,14 @@ public class EnemyScript : MonoBehaviour, IDamagable
         isDead = false;
 
         player = GameManagerScript.instance.player;
+
+        if(GameManagerScript.instance != null )
+        {
+            if (!GameManagerScript.instance.enemyList.Contains(this.gameObject))
+            {
+                GameManagerScript.instance.enemyList.Add(this.gameObject);
+            }
+        }
     }
 
     void Update()
@@ -162,12 +169,26 @@ public class EnemyScript : MonoBehaviour, IDamagable
         isDead = true;
         isControllable = false;
         audioSource.PlayOneShot(deadSound);
+        if(GameManagerScript.instance != null )
+        {
+            if (GameManagerScript.instance.enemyList.Contains(this.gameObject))
+            {
+                GameManagerScript.instance.enemyList.Remove(this.gameObject);
+            }
+        }
         Invoke(nameof(DestroySelf), 2.0f);
     }
 
     private void DestroySelf()
     {
         Destroy(this.gameObject);
+    }
+
+    public void FallToDead()
+    {
+        movementController.isFalling = true;
+        spriteRenderer.sortingOrder = -9999;
+        Invoke(nameof(OnDead), 0.75f);
     }
 
     private void UpdateState()
@@ -307,6 +328,7 @@ public class EnemyScript : MonoBehaviour, IDamagable
     {
 
         Vector3 currentPosition = this.transform.position;
+        isFacingRight = player.position.x > currentPosition.x;
         Vector3 direction = (isFacingRight ? 1 : -1) * Vector3.right;
 
         switch (attackCount)
@@ -367,6 +389,7 @@ public class EnemyScript : MonoBehaviour, IDamagable
         animator.SetBool("isAttacked", isAttacked);
         animator.SetBool("isFalling", isFloating);
         animator.SetBool("isDead", isDead);
+        animator.SetBool("isAttacking", isAttacking);
 
         float healthPercent = health * 1.0f / maxHealth;
         Vector3 newScale = healthBar.localScale;

@@ -95,6 +95,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: hitbox_tracker
       objectReference: {fileID: 0}
+    - target: {fileID: 3572497656403713418, guid: 0c545c856c94953499359ea25e2bfe36, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4796518351156442495, guid: 0c545c856c94953499359ea25e2bfe36, type: 3}
       propertyPath: m_RootOrder
       value: 3

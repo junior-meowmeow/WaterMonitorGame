@@ -313,7 +313,7 @@ Transform:
   - {fileID: 1031173949652606776}
   - {fileID: 8053307175805659204}
   m_Father: {fileID: 0}
-  m_RootOrder: -1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5414134579265070423
 MonoBehaviour:
@@ -329,7 +329,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stage: {fileID: 0}
   player: {fileID: 0}
-  isActive: 0
+  isActive: 1
   audioSource: {fileID: 1536115654256307825}
   attackSounds:
   - {fileID: 8300000, guid: 5b13cf1d981e9db46ac5ff272f6af943, type: 3}
@@ -375,6 +375,7 @@ MonoBehaviour:
   sprite: {fileID: 7841395855199785041}
   gravityScale: 2
   isGrounded: 0
+  isFalling: 0
   isHittingGround: 0
   bounceTimes: 0
   hasDecayableVelocity: 0
@@ -440,7 +441,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 1
-  m_Volume: 0.1
+  m_Volume: 0.2
   m_Pitch: 1
   Loop: 0
   Mute: 0

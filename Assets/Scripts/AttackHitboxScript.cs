@@ -39,7 +39,7 @@ public class AttackHitboxScript : MonoBehaviour
             IDamagable damagable = other.GetComponent<IDamagable>();
             if (damagable != null)
             {
-                damagable.RecieveDamage(attackerPosition,damage, staggerDuration,horizontalKnockbackVelocity,verticalKnockbackVelocity);
+                damagable.RecieveDamage(attackerPosition, damage, staggerDuration, horizontalKnockbackVelocity, verticalKnockbackVelocity);
                 isCollideTarget = true;
             }
         }
