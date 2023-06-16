@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyScript : MonoBehaviour, IDamagable
+public class TestGameNyanScript : MonoBehaviour,IDamagable
 {
     public Transform stage;
 
@@ -44,7 +44,8 @@ public class EnemyScript : MonoBehaviour, IDamagable
     public bool isFacingRight = true;
 
     private float lastMovementTime;
-    public float maxDistance = 5f;
+    public float maxWalkingDistance = 5f;
+    public float minDistanceToPlayer = 8f;
     private Vector2 velocity;
     private float walkingDuration;
 
@@ -84,14 +85,6 @@ public class EnemyScript : MonoBehaviour, IDamagable
         isDead = false;
 
         player = GameManagerScript.instance.player;
-
-        if(!isSpecial && GameManagerScript.instance != null )
-        {
-            if (!GameManagerScript.instance.enemyList.Contains(this.gameObject))
-            {
-                GameManagerScript.instance.enemyList.Add(this.gameObject);
-            }
-        }
     }
 
     void Update()
@@ -169,7 +162,7 @@ public class EnemyScript : MonoBehaviour, IDamagable
         isDead = true;
         isControllable = false;
         audioSource.PlayOneShot(deadSound);
-        if(GameManagerScript.instance != null )
+        if (GameManagerScript.instance != null)
         {
             if (GameManagerScript.instance.enemyList.Contains(this.gameObject))
             {
@@ -261,7 +254,8 @@ public class EnemyScript : MonoBehaviour, IDamagable
         {
             if (attackRange.isPlayerInAttackRange && isAttackCooldownReady)
             {
-                PerformAttack();
+                //PerformAttack();
+                CalculateMovement();
             }
             else
             {
@@ -275,16 +269,11 @@ public class EnemyScript : MonoBehaviour, IDamagable
 
     private void CalculateMovement()
     {
-        if (attackRange.isPlayerInAttackRange)
-        {
-            CancelMovement();
-            return;
-        }
 
         Vector2 currentPosition2D = this.transform.position;
         Vector2 targetPosition2D = player.position;
 
-        Vector2 displacement = targetPosition2D - currentPosition2D;
+        Vector2 displacement = currentPosition2D - targetPosition2D;
 
         Vector2 direction = displacement.normalized;
 
@@ -299,7 +288,7 @@ public class EnemyScript : MonoBehaviour, IDamagable
 
         velocity = direction * moveSpeed;
 
-        float distance = (displacement.magnitude > maxDistance) ? maxDistance : displacement.magnitude;
+        float distance = (displacement.magnitude < minDistanceToPlayer) ? maxWalkingDistance : 0;
 
         walkingDuration = distance / moveSpeed;
         lastMovementTime = Time.timeSinceLevelLoad;
@@ -415,5 +404,4 @@ public class EnemyScript : MonoBehaviour, IDamagable
         attackBox.verticalKnockbackVelocity = verticalKnockback;
         attackBox.boxCollider.size = hitBoxSize;
     }
-
 }

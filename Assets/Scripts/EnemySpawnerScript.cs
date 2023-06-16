@@ -31,8 +31,9 @@ public class EnemySpawnerScript : MonoBehaviour
     {
         foreach (Vector3 spawnPosition in spawnPositions)
         {
+            print(spawnPosition.x);
             GameObject enemy = Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
-            enemy.transform.SetParent(this.transform, true);
+            enemy.transform.SetParent(this.transform, false);
             enemy.GetComponent<EnemyScript>().isActive = true;
             GameManagerScript.instance.enemyList.Add(enemy);
         }

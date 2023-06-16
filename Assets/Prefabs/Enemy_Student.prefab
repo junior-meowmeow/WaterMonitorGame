@@ -330,6 +330,7 @@ MonoBehaviour:
   stage: {fileID: 0}
   player: {fileID: 0}
   isActive: 1
+  isSpecial: 0
   audioSource: {fileID: 1536115654256307825}
   attackSounds:
   - {fileID: 8300000, guid: 5b13cf1d981e9db46ac5ff272f6af943, type: 3}

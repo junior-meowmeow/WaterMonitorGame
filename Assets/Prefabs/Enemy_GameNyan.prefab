@@ -74,7 +74,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 499
   m_Sprite: {fileID: 21300000, guid: 88953b4ab849c4c44a10bc99bd9925ec, type: 3}
-  m_Color: {r: 1, g: 0.40943396, b: 0.42432347, a: 1}
+  m_Color: {r: 0.557387, g: 0.81719565, b: 0.9622642, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -244,7 +244,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 100
-  m_Sprite: {fileID: 21300000, guid: 9968026c12a94904ea43d0e8d02cd8a3, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 80691d6470ac64c4eb2851f199609635, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -265,7 +265,7 @@ Animator:
   m_GameObject: {fileID: 3462490416884386099}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 3a9fcf1feafa5dc4392917bb0a049eef, type: 2}
+  m_Controller: {fileID: 9100000, guid: 9c344753217949542a220e76a56e552c, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -285,7 +285,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6117545391924023847}
-  - component: {fileID: 5414134579265070423}
+  - component: {fileID: 5090042544332117276}
   - component: {fileID: 2103243245864879451}
   - component: {fileID: 456508778270677396}
   - component: {fileID: 765309430801719950}
@@ -315,7 +315,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5414134579265070423
+--- !u!114 &5090042544332117276
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -324,42 +324,44 @@ MonoBehaviour:
   m_GameObject: {fileID: 4432174921253907424}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 92745fa3482e41247830a1507447fb5c, type: 3}
+  m_Script: {fileID: 11500000, guid: 5bef3291963c263449fcf7c0fbfe84c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   stage: {fileID: 0}
   player: {fileID: 0}
   isActive: 1
+  isSpecial: 1
   audioSource: {fileID: 1536115654256307825}
   attackSounds:
   - {fileID: 8300000, guid: 5b13cf1d981e9db46ac5ff272f6af943, type: 3}
   - {fileID: 8300000, guid: 5b13cf1d981e9db46ac5ff272f6af943, type: 3}
   - {fileID: 8300000, guid: 5b13cf1d981e9db46ac5ff272f6af943, type: 3}
-  attackedSound: {fileID: 8300000, guid: 65b68439ad7a52a4db314028c6bbecdd, type: 3}
-  deadSound: {fileID: 8300000, guid: b253dbaf58bdf904b915ebe3dbff4672, type: 3}
+  attackedSound: {fileID: 8300000, guid: e35a43149e9568b41a4874a30bed2529, type: 3}
+  deadSound: {fileID: 8300000, guid: 3a2d1c8c3236bd940abbf4bc23cc5b11, type: 3}
   movementController: {fileID: 2103243245864879451}
   attackRange: {fileID: 3633831425404031120}
   spriteRenderer: {fileID: 1495635414006755176}
   animator: {fileID: 4274639529561156}
   healthBar: {fileID: 6098866890910117721}
-  maxHealth: 100
+  maxHealth: 5
   health: 0
   isInvicible: 0
   isControllable: 0
-  isFloating: 1
+  isFloating: 0
   isKnockedBack: 0
   isDead: 0
-  actionCooldown: 2
-  moveSpeed: 2.5
+  actionCooldown: 0.1
+  moveSpeed: 2
   isFacingRight: 1
-  maxDistance: 4
+  maxWalkingDistance: 10
+  minDistanceToPlayer: 8
   isWalking: 0
   isAttacking: 0
   attackCooldown: 5
-  comboCooldown: 5
+  comboCooldown: 1
   attackSpeed: 1
   resetDuration: 4
-  attackHitboxPrefab: {fileID: 8253855612481442477, guid: 532e2a2c8c63fb94eb450be15c147543, type: 3}
+  attackHitboxPrefab: {fileID: 0}
 --- !u!114 &2103243245864879451
 MonoBehaviour:
   m_ObjectHideFlags: 0
