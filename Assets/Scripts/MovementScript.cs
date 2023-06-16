@@ -25,7 +25,7 @@ public class MovementScript : MonoBehaviour
 
     public int bounceTimes;
     public static float decayRate = 2f;
-    public static float minimumVelocity = 0.5f;
+    public static float minimumVelocity = 1f;
     public bool hasDecayableVelocity = false;
 
     public static float depthScale = 0.75f;

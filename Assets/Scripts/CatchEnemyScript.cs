@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class CatchEnemyScript : MonoBehaviour
 {
+    public AudioSource audioSource;
+    public AudioClip onCatchSound;
 
     public string catchTag = "EnemyHitbox";
     private Vector3 direction;
@@ -62,6 +64,7 @@ public class CatchEnemyScript : MonoBehaviour
                 isCatchingEnemy = true;
                 catchedEnemy = other.gameObject;
                 isReadyToCatch = false;
+                audioSource.PlayOneShot(onCatchSound);
             }
         }
     }

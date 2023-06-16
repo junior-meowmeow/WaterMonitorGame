@@ -7,6 +7,9 @@ public class GameManagerScript : MonoBehaviour
 
     public static GameManagerScript instance;
 
+    public AudioSource audioSource;
+    public AudioClip mapBGM;
+
     public Transform player;
 
     public GameObject[] enemyList;
@@ -19,9 +22,22 @@ public class GameManagerScript : MonoBehaviour
         }
     }
 
+    void Start()
+    {
+        audioSource.clip = mapBGM;
+        audioSource.Play();
+    }
     void Update()
     {
-        
+
     }
+
+    public void changeBGM(AudioClip newBGM)
+    {
+        audioSource.Stop();
+        audioSource.clip = newBGM;
+        audioSource.Play();
+    }
+
 
 }

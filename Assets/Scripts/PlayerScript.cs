@@ -6,10 +6,17 @@ public class PlayerScript : MonoBehaviour, IDamagable
 {
     public Transform stage;
 
+    public AudioSource audioSource;
+    public AudioClip[] attackSounds;
+    public AudioClip attackedSound;
+    public AudioClip deadSound;
+
     public MovementScript movementController;
 
     public SpriteRenderer spriteRenderer;
     public Animator animator;
+
+    public Transform healthBar;
 
     public int maxHealth = 100;
     public int health;
@@ -28,7 +35,7 @@ public class PlayerScript : MonoBehaviour, IDamagable
 
     private bool isFloating;
     private bool isKnockedBack;
-    [SerializeField] private bool isDead;
+    private bool isDead;
     private bool isDashing;
     private bool isAttacking;
     private bool isHeavyAttack;
@@ -92,7 +99,12 @@ public class PlayerScript : MonoBehaviour, IDamagable
             health -= damage;
             if (health <= 0)
             {
+                health = 0;
                 OnDead();
+            }
+            else
+            {
+                audioSource.PlayOneShot(attackedSound);
             }
         }
 
@@ -136,6 +148,7 @@ public class PlayerScript : MonoBehaviour, IDamagable
     {
         isDead = true;
         animator.SetTrigger("Dead");
+        audioSource.PlayOneShot(deadSound);
         //Invoke(nameof(DestroySelf), 2.0f);
     }
 
@@ -372,7 +385,7 @@ public class PlayerScript : MonoBehaviour, IDamagable
                             float verticalKnockback = 5;
                             Vector3 hitBoxSize = new Vector3(1.25f, 1f, 1f);
                             CreateAttackBox(attackBoxPosition, damage, 0, horizontalKnockback, verticalKnockback, hitBoxSize);
-                            CreateAttackBox(secondAttackBoxPosition, damage, 0, horizontalKnockback, verticalKnockback, hitBoxSize);
+                            CreateAttackBox(secondAttackBoxPosition, damage, 0, -horizontalKnockback, verticalKnockback, hitBoxSize);
                         }
                         break;
                     case 3:
@@ -434,6 +447,8 @@ public class PlayerScript : MonoBehaviour, IDamagable
             attackCooldown = lightAttackCooldown;
         }
 
+        audioSource.PlayOneShot(attackSounds[attackCount+(isHeavyAttack ? 5 : 0)]);
+
         attackCount++;
 
         // Check Combo End
@@ -457,6 +472,11 @@ public class PlayerScript : MonoBehaviour, IDamagable
         animator.SetBool("isAttacking", isAttacking);
         animator.SetBool("isHeavyAttack", isHeavyAttack);
         animator.SetInteger("attackCount", attackCount);
+
+        float healthPercent = health * 1.0f / maxHealth;
+        Vector3 newScale = healthBar.localScale;
+        newScale.x = healthPercent * 1.69f;
+        healthBar.localScale = newScale;
     }
 
     private void CreateAttackBox(Vector3 position, int damage, float staggerDuration, Vector2 horizontalKnockback, float verticalKnockback, Vector3 hitBoxSize)

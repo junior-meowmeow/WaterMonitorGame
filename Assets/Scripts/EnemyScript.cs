@@ -10,11 +10,20 @@ public class EnemyScript : MonoBehaviour, IDamagable
 
     public Transform player;
 
+    public bool isActive = false;
+
+    public AudioSource audioSource;
+    public AudioClip[] attackSounds;
+    public AudioClip attackedSound;
+    public AudioClip deadSound;
+
     public MovementScript movementController;
     public AttackRangeScript attackRange;
 
     public SpriteRenderer spriteRenderer;
     public Animator animator;
+
+    public Transform healthBar;
 
     public int maxHealth = 100;
     public int health;
@@ -30,11 +39,13 @@ public class EnemyScript : MonoBehaviour, IDamagable
     [SerializeField] private bool isDead;
 
     private float lastActionTime;
-    public float actionCooldown = 0.5f;
+    public float actionCooldown = 1f;
 
-    public float moveSpeed = 6f;
+    public float moveSpeed = 2.5f;
     public bool isFacingRight = true;
 
+    private float lastMovementTime;
+    public float maxDistance = 5f;
     private Vector2 velocity;
     private float walkingDuration;
 
@@ -65,6 +76,7 @@ public class EnemyScript : MonoBehaviour, IDamagable
         walkingDuration = 0f;
 
         lastActionTime = -100f;
+        lastMovementTime = -100f;
         lastAttackTime = -100f;
         attackCount = 0;
 
@@ -85,14 +97,22 @@ public class EnemyScript : MonoBehaviour, IDamagable
 
     public void RecieveDamage(Vector3 attackerPosition, int damage, float staggerDuration, Vector2 horizontalKnockbackVelocity, float verticalKnockbackVelocity)
     {
+        CancelMovement();
+
         if (damage > 0)
         {
             health -= damage;
             if (health <= 0)
             {
+                health = 0;
                 OnDead();
             }
+            else
+            {
+                audioSource.PlayOneShot(attackedSound);
+            }
         }
+
 
         if (staggerDuration > 0)
         {
@@ -136,6 +156,7 @@ public class EnemyScript : MonoBehaviour, IDamagable
     {
         isDead = true;
         isControllable = false;
+        audioSource.PlayOneShot(deadSound);
         Invoke(nameof(DestroySelf), 2.0f);
     }
 
@@ -194,7 +215,7 @@ public class EnemyScript : MonoBehaviour, IDamagable
     private void UpdateAction()
     {
 
-        if (!isControllable)
+        if (!isControllable || !isActive)
         {
             return;
         }
@@ -215,6 +236,7 @@ public class EnemyScript : MonoBehaviour, IDamagable
             {
                 CalculateMovement();
             }
+            lastActionTime = Time.timeSinceLevelLoad;
         }
 
         PerformMovement();
@@ -222,15 +244,58 @@ public class EnemyScript : MonoBehaviour, IDamagable
 
     private void CalculateMovement()
     {
+        if (attackRange.isPlayerInAttackRange)
+        {
+            CancelMovement();
+            return;
+        }
+
         Vector2 currentPosition2D = this.transform.position;
         Vector2 targetPosition2D = player.position;
-    }
 
+        Vector2 displacement = targetPosition2D - currentPosition2D;
+
+        Vector2 direction = displacement.normalized;
+
+        if (direction.x > 0)
+        {
+            isFacingRight = true;
+        }
+        else if (direction.x < 0)
+        {
+            isFacingRight = false;
+        }
+
+        velocity = direction * moveSpeed;
+
+        float distance = (displacement.magnitude > maxDistance) ? maxDistance : displacement.magnitude;
+
+        walkingDuration = distance / moveSpeed;
+        lastMovementTime = Time.timeSinceLevelLoad;
+
+    }
     private void PerformMovement()
     {
 
+        if (Time.timeSinceLevelLoad - lastMovementTime <= walkingDuration)
+        {
+            isWalking = true;
+            movementController.SetHorizontalVelocity(velocity);
+        }
+        else
+        {
+            print("movement cancel");
+            CancelMovement();
+        }
 
+    }
 
+    public void CancelMovement()
+    {
+        isWalking = false;
+        velocity = Vector2.zero;
+        walkingDuration = 0;
+        movementController.SetHorizontalVelocity(Vector2.zero);
     }
 
     private void PerformAttack()
@@ -274,6 +339,8 @@ public class EnemyScript : MonoBehaviour, IDamagable
                 break;
         }
 
+        audioSource.PlayOneShot(attackSounds[attackCount]);
+
         lastAttackTime = Time.timeSinceLevelLoad;
         isAttacking = true;
         attackCount++;
@@ -295,6 +362,11 @@ public class EnemyScript : MonoBehaviour, IDamagable
         animator.SetBool("isAttacked", isAttacked);
         animator.SetBool("isFalling", isFloating);
         animator.SetBool("isDead", isDead);
+
+        float healthPercent = health * 1.0f / maxHealth;
+        Vector3 newScale = healthBar.localScale;
+        newScale.x = healthPercent * 1.69f;
+        healthBar.localScale = newScale;
     }
 
     private void CreateAttackBox(Vector3 position, int damage, float staggerDuration, Vector2 horizontalKnockback, float verticalKnockback, Vector3 hitBoxSize)
