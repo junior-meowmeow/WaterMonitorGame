@@ -10,6 +10,7 @@ public class EnemyScript : MonoBehaviour, IDamagable
     public Transform player;
 
     public bool isActive = false;
+    public bool isSpecial = false;
 
     public AudioSource audioSource;
     public AudioClip[] attackSounds;
@@ -85,7 +86,7 @@ public class EnemyScript : MonoBehaviour, IDamagable
 
         player = GameManagerScript.instance.player;
 
-        if(GameManagerScript.instance != null )
+        if(!isSpecial && GameManagerScript.instance != null )
         {
             if (!GameManagerScript.instance.enemyList.Contains(this.gameObject))
             {
@@ -187,7 +188,12 @@ public class EnemyScript : MonoBehaviour, IDamagable
     public void FallToDead()
     {
         movementController.isFalling = true;
-        spriteRenderer.sortingOrder = -9999;
+        health = 0;
+        CancelMovement();
+        isActive = false;
+        Color newColor = spriteRenderer.color;
+        newColor.a = 0;
+        spriteRenderer.color = newColor;
         Invoke(nameof(OnDead), 0.75f);
     }
 

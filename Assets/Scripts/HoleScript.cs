@@ -13,8 +13,8 @@ public class HoleScript : MonoBehaviour
             Vector2 currentPosition2D = this.transform.position;
             Vector2 targetPosition2D = player.transform.position;
             Vector2 displacement = targetPosition2D - currentPosition2D;
-            int damage = 10;
-            Vector2 horizontalKnockback = 1.5f * (displacement.x > 0 ? 1 : -1) * Vector2.right;
+            int damage = 5;
+            Vector2 horizontalKnockback = 1.5f * (displacement.normalized);
             float verticalKnockback = 5f;
             player.GetComponent<PlayerScript>().RecieveDamage(this.transform.position, damage, 0f, horizontalKnockback, verticalKnockback);
         }
