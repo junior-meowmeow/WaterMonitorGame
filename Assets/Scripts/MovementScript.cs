@@ -33,8 +33,8 @@ public class MovementScript : MonoBehaviour
     public static float upperBorder = 0.5f;
     public static float lowerBorder = -5.0f;
     public static float horizontalBorder = 8.5f;
-    public static bool leftSideLocked;
-    public static bool rightSideLocked;
+    public bool leftSideLocked;
+    public bool rightSideLocked;
 
 
     void Start()
@@ -186,7 +186,7 @@ public class MovementScript : MonoBehaviour
             position.y = lowerBorder;
         }
 
-        if (leftSideLocked && position.x < horizontalBorder)
+        if (leftSideLocked && position.x < -horizontalBorder)
         {
             position.x = -horizontalBorder;
         }
