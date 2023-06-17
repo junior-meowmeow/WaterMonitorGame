@@ -161,6 +161,7 @@ public class TestGameNyanScript : MonoBehaviour,IDamagable
     {
         isDead = true;
         isControllable = false;
+        GameManagerScript.instance.playerScript.Heal(maxHealth);
         audioSource.PlayOneShot(deadSound);
         if (GameManagerScript.instance != null)
         {

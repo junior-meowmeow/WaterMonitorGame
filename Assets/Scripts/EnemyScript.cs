@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class EnemyScript : MonoBehaviour, IDamagable
 {
@@ -44,7 +45,8 @@ public class EnemyScript : MonoBehaviour, IDamagable
     public bool isFacingRight = true;
 
     private float lastMovementTime;
-    public float maxDistance = 5f;
+    public float maxDistance = 4f;
+    public float maxAdditionDistance = 3f;
     private Vector2 velocity;
     private float walkingDuration;
 
@@ -284,6 +286,9 @@ public class EnemyScript : MonoBehaviour, IDamagable
         Vector2 currentPosition2D = this.transform.position;
         Vector2 targetPosition2D = player.position;
 
+        targetPosition2D.x += Random.Range(-0.2f, 0.2f);
+        targetPosition2D.y += Random.Range(-0.2f, 0.2f);
+
         Vector2 displacement = targetPosition2D - currentPosition2D;
 
         Vector2 direction = displacement.normalized;
@@ -299,7 +304,10 @@ public class EnemyScript : MonoBehaviour, IDamagable
 
         velocity = direction * moveSpeed;
 
-        float distance = (displacement.magnitude > maxDistance) ? maxDistance : displacement.magnitude;
+        float generatedDistance = maxDistance +Random.Range(0, maxAdditionDistance+1);
+        print(generatedDistance);
+
+        float distance = Random.Range(-1f, 1f) + ((displacement.magnitude > generatedDistance) ? generatedDistance : displacement.magnitude);
 
         walkingDuration = distance / moveSpeed;
         lastMovementTime = Time.timeSinceLevelLoad;

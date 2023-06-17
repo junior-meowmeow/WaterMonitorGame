@@ -916,8 +916,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 360475109}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -3.67, y: -1.94, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: -11.07, y: -1.94, z: 0}
+  m_LocalScale: {x: 4.27, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 106123935}
@@ -1836,12 +1836,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2722dca5dadb22b42a48285bf22aedeb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  titleSceneName: TitleScene
   audioSource: {fileID: 993096680}
   mapBGM: {fileID: 8300000, guid: c7b8388a997d06d4fa518d4a0f231d79, type: 3}
   stage: {fileID: 288774500}
   leftBorder: 0
   rightBorder: -133
   player: {fileID: 17005718}
+  playerScript: {fileID: 17005721}
   playerMovement: {fileID: 17005722}
   enemyList: []
 --- !u!82 &993096680
@@ -2860,6 +2862,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1701174672}
     m_Modifications:
+    - target: {fileID: 2103243245864879451, guid: 915d2c3aff342104583b240655431cbc, type: 3}
+      propertyPath: leftSideLocked
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2103243245864879451, guid: 915d2c3aff342104583b240655431cbc, type: 3}
+      propertyPath: rightSideLocked
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4432174921253907424, guid: 915d2c3aff342104583b240655431cbc, type: 3}
       propertyPath: m_Name
       value: Enemy_Boss_Anarch
@@ -2990,7 +3000,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyScript: {fileID: 1662331673}
+  movementScript: {fileID: 1662331678}
   exit: {fileID: 1210819297}
+  foundPlayer: 0
+--- !u!114 &1662331678 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2103243245864879451, guid: 915d2c3aff342104583b240655431cbc, type: 3}
+  m_PrefabInstance: {fileID: 1632150669}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1503380799}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59bd7b213a388b949a6ffcf6922b1813, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1701174671
 GameObject:
   m_ObjectHideFlags: 0

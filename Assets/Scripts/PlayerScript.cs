@@ -61,6 +61,8 @@ public class PlayerScript : MonoBehaviour, IDamagable
     void Start()
     {
         GameManagerScript.instance.player = this.transform;
+        GameManagerScript.instance.playerScript = this;
+        GameManagerScript.instance.playerMovement = movementController;
 
         stage = this.transform.parent;
 
@@ -87,6 +89,15 @@ public class PlayerScript : MonoBehaviour, IDamagable
         UpdateDashState();
         UpdateAttackState();
         UpdateSprite();
+    }
+
+    public void Heal(int healAmount)
+    {
+        health += healAmount;
+        if(health > maxHealth)
+        {
+            health = maxHealth;
+        }
     }
 
     public void RecieveDamage(Vector3 attackerPosition, int damage, float staggerDuration, Vector2 horizontalKnockbackVelocity, float verticalKnockbackVelocity)
@@ -154,7 +165,12 @@ public class PlayerScript : MonoBehaviour, IDamagable
         isDead = true;
         animator.SetTrigger("Dead");
         audioSource.PlayOneShot(deadSound);
-        //Invoke(nameof(DestroySelf), 2.0f);
+        Invoke(nameof(AfterDead), 5.0f);
+    }
+
+    private void AfterDead()
+    {
+        GameManagerScript.instance.BackToTitleScene();
     }
 
     private void DestroySelf()

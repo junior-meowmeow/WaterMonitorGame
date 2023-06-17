@@ -5,7 +5,9 @@ using UnityEngine;
 public class TestExitGuardScript : MonoBehaviour
 {
     public EnemyScript enemyScript;
+    public MovementScript movementScript;
     public TestSceneExitScript exit;
+    public bool foundPlayer;
 
     void Update()
     {
@@ -13,6 +15,17 @@ public class TestExitGuardScript : MonoBehaviour
         {
             exit.isBossKilled = true;
         }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (!foundPlayer && other.CompareTag("PlayerInteraction"))
+        {
+            GameManagerScript.instance.enemyList.Add(this.gameObject);
+            movementScript.rightSideLocked = true;
+            foundPlayer = true;
+        }
+
     }
 
 }

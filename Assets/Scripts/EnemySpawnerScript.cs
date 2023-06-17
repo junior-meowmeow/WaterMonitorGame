@@ -34,6 +34,7 @@ public class EnemySpawnerScript : MonoBehaviour
             print(spawnPosition.x);
             GameObject enemy = Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
             enemy.transform.SetParent(this.transform, false);
+            enemy.transform.localPosition = spawnPosition;
             enemy.GetComponent<EnemyScript>().isActive = true;
             GameManagerScript.instance.enemyList.Add(enemy);
         }

@@ -32,4 +32,17 @@ public class HoleScript : MonoBehaviour
             }
         }
     }
+    private void OnTriggerStay(Collider other)
+    {
+        if (other.CompareTag("PlayerHitbox"))
+        {
+            GameObject player = other.gameObject;
+            Vector2 currentPosition2D = this.transform.position;
+            Vector2 targetPosition2D = player.transform.position;
+            Vector2 displacement = targetPosition2D - currentPosition2D;
+            float staggerDuration = 0.5f;
+            Vector2 horizontalKnockback = 1.5f * (displacement.normalized);
+            player.GetComponent<PlayerScript>().RecieveDamage(this.transform.position, 0, staggerDuration, horizontalKnockback, 0);
+        }
+    }
 }

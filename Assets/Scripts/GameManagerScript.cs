@@ -1,11 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManagerScript : MonoBehaviour
 {
 
     public static GameManagerScript instance;
+
+    public string titleSceneName = "TitleScene";
 
     public AudioSource audioSource;
     public AudioClip mapBGM;
@@ -16,6 +19,7 @@ public class GameManagerScript : MonoBehaviour
     public float rightBorder = -133f;
 
     public Transform player;
+    public PlayerScript playerScript;
     public MovementScript playerMovement;
 
     public List<GameObject> enemyList = new List<GameObject>();
@@ -56,6 +60,11 @@ public class GameManagerScript : MonoBehaviour
         audioSource.Stop();
         audioSource.clip = newBGM;
         audioSource.Play();
+    }
+
+    public void BackToTitleScene()
+    {
+        SceneManager.LoadScene(titleSceneName);
     }
 
 
