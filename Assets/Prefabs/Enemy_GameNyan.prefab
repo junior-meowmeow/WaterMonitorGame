@@ -329,7 +329,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stage: {fileID: 0}
   player: {fileID: 0}
-  isActive: 1
+  isActive: 0
   isSpecial: 1
   audioSource: {fileID: 1536115654256307825}
   attackSounds:

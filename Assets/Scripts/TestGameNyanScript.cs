@@ -405,4 +405,12 @@ public class TestGameNyanScript : MonoBehaviour,IDamagable
         attackBox.verticalKnockbackVelocity = verticalKnockback;
         attackBox.boxCollider.size = hitBoxSize;
     }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if(!isActive && other.CompareTag("PlayerEventTrigger"))
+        {
+            isActive = true;
+        }
+    }
 }

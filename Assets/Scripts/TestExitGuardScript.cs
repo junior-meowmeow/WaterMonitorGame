@@ -22,6 +22,7 @@ public class TestExitGuardScript : MonoBehaviour
         if (!foundPlayer && other.CompareTag("PlayerInteraction"))
         {
             GameManagerScript.instance.enemyList.Add(this.gameObject);
+            movementScript.leftSideLocked = true;
             movementScript.rightSideLocked = true;
             foundPlayer = true;
         }
