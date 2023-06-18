@@ -307,8 +307,8 @@ public class PlayerScript : MonoBehaviour, IDamagable
         bool isAttackCooldownReady = (Time.timeSinceLevelLoad - lastAttackTime) * attackSpeed > attackCooldown;
         bool isComboCooldownReady = (Time.timeSinceLevelLoad - lastComboTime) * attackSpeed > comboCooldown;
 
-        bool lightAttackPressed = Input.GetKeyDown(KeyCode.J);
-        bool heaveyAttackPressed = Input.GetKeyDown(KeyCode.K);
+        bool lightAttackPressed = Input.GetKeyDown(KeyCode.J) || Input.GetMouseButtonDown(0);
+        bool heaveyAttackPressed = Input.GetKeyDown(KeyCode.K) || Input.GetMouseButtonDown(1);
 
         //print(isAttackCooldownReady + " " + isComboCooldownReady);
 
